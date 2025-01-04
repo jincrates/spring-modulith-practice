@@ -7,7 +7,6 @@ import org.springframework.data.relational.core.mapping.Table;
 public record OrderItem(
     @Id
     Long id,
-    Long orderId,
     Long productId,
     int quantity
 ) {
