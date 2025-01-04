@@ -1,7 +1,18 @@
 package me.jincrates.modulith.product;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.jincrates.modulith.order.OrderPlacedEvent;
+import me.jincrates.modulith.order.event.OrderPlacedEvent;
+import me.jincrates.modulith.order.model.OrderItem;
+import me.jincrates.modulith.product.event.ProductsDecreasedInventoryEvent;
+import me.jincrates.modulith.product.model.Product;
+import me.jincrates.modulith.product.model.ProductRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,7 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class Products {
+
+    private final ProductRepository repository;
+    private final ApplicationEventPublisher publisher;
 
     //    @Async  // async를 통해서 비동기로 처리할 수 있다.
 //    @EventListener
@@ -21,6 +36,45 @@ public class Products {
             event
         );
         Thread.sleep(10_000);
+
+        Map<Long, OrderItem> orderItemMap = event.items().stream()
+            .collect(Collectors.toMap(
+                OrderItem::productId,
+                item -> item
+            ));
+
+        Set<Long> productIds = orderItemMap.keySet();
+        List<Product> finded = repository.findAllById(productIds);
+        if (finded.size() != productIds.size()) {
+            throw new IllegalStateException("상품을 찾을 수 없습니다. (productIds=" + productIds + ")");
+        }
+        List<Product> update = new ArrayList<>();
+        finded.forEach(product -> {
+            OrderItem orderItem = orderItemMap.get(product.id());
+            if (product.inventory() < orderItem.quantity()) {
+                throw new IllegalStateException(
+                    String.format(
+                        "재고가 부족합니다. (product.id=%d, product.inventory=%d, orderItem.quantity=%s)",
+                        product.id(),
+                        product.inventory(),
+                        orderItem.quantity()
+                    )
+                );
+            }
+            // 상품의 재고를 감소시키고
+            update.add(product.decreaseInventory(orderItem.quantity()));
+        });
+
+        // 저장한다.
+        List<Product> updated = repository.saveAll(update);
+
+        publisher.publishEvent(new ProductsDecreasedInventoryEvent(
+            event.orderId(),
+            updated.stream()
+                .map(Product::id)
+                .collect(Collectors.toSet())
+        ));
+
         log.info(
             "stopping [{}]",
             event

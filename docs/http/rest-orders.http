@@ -1,8 +1,9 @@
-### 주문
+### 주문 대기
 POST {{order-api}}/orders
 Content-Type: application/json
 
 {
+  "status": "PENDING",
   "items": [
     {
       "productId": 1,

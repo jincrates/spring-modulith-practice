@@ -1,4 +1,4 @@
-package me.jincrates.modulith.order;
+package me.jincrates.modulith.order.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
