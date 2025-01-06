@@ -1,4 +1,4 @@
-package me.jincrates.modulith.product.event;
+package me.jincrates.modulith.catalog.event;
 
 import java.util.Set;
 

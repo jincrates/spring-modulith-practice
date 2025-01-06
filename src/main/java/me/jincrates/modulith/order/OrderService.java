@@ -2,11 +2,11 @@ package me.jincrates.modulith.order;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.jincrates.modulith.catalog.event.ProductsDecreasedInventoryEvent;
 import me.jincrates.modulith.order.event.OrderCompletedEvent;
 import me.jincrates.modulith.order.event.OrderPlacedEvent;
 import me.jincrates.modulith.order.model.Order;
 import me.jincrates.modulith.order.model.OrderRepository;
-import me.jincrates.modulith.product.event.ProductsDecreasedInventoryEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class Orders {
+public class OrderService {
 
     private final OrderRepository repository;
     private final ApplicationEventPublisher publisher;
@@ -48,11 +48,11 @@ public class Orders {
         );
         Thread.sleep(5_000);
 
-        Order finded = repository.findById(event.orderId())
+        var finded = repository.findById(event.orderId())
             .orElseThrow(() -> new IllegalStateException(
                 "주문을 찾을 수 없습니다. (orderId=" + event.orderId() + ")"));
 
-        Order updated = repository.save(finded.complete());
+        var updated = repository.save(finded.pay(true));
 
         publisher.publishEvent(new OrderCompletedEvent(updated.id()));
 

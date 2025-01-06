@@ -1,4 +1,4 @@
-package me.jincrates.modulith.product;
+package me.jincrates.modulith.catalog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,11 +7,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.jincrates.modulith.catalog.event.ProductsDecreasedInventoryEvent;
+import me.jincrates.modulith.catalog.model.Product;
+import me.jincrates.modulith.catalog.model.ProductRepository;
 import me.jincrates.modulith.order.event.OrderPlacedEvent;
 import me.jincrates.modulith.order.model.OrderItem;
-import me.jincrates.modulith.product.event.ProductsDecreasedInventoryEvent;
-import me.jincrates.modulith.product.model.Product;
-import me.jincrates.modulith.product.model.ProductRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Service;
@@ -54,7 +54,7 @@ public class Products {
             if (product.inventory() < orderItem.quantity()) {
                 throw new IllegalStateException(
                     String.format(
-                        "재고가 부족합니다. (product.id=%d, product.inventory=%d, orderItem.quantity=%s)",
+                        "재고가 부족합니다. (catalog.id=%d, catalog.inventory=%d, orderItem.quantity=%s)",
                         product.id(),
                         product.inventory(),
                         orderItem.quantity()

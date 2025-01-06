@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/orders")
 class OrderApi {
 
-    private final Orders orders;
+    private final OrderService orderService;
 
     @PostMapping
     void place(@RequestBody Order order) {
-        this.orders.place(order);
+        this.orderService.place(order);
     }
 }

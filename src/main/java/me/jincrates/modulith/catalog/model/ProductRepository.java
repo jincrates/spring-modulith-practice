@@ -1,4 +1,4 @@
-package me.jincrates.modulith.product.model;
+package me.jincrates.modulith.catalog.model;
 
 import org.springframework.data.repository.ListCrudRepository;
 
