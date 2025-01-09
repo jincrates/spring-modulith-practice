@@ -1,4 +1,4 @@
-package me.jincrates.modulith.order.enums;
+package me.jincrates.modulith.order.domain.core.enums;
 
 import java.util.Arrays;
 import java.util.List;
