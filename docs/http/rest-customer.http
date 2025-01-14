@@ -1,0 +1,8 @@
+### 고객 생성
+POST {{backend-api}}/api/customers
+Content-Type: application/json
+
+{
+  "phone": "010-{{$random.integer(1000, 10000)}}-{{$random.integer(1000, 10000)}}",
+  "nickname": "{{$random.alphabetic(10)}}"
+}

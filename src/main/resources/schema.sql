@@ -2,6 +2,7 @@
 drop table if exists order_items;
 drop table if exists orders;
 drop table if exists products;
+drop table if exists customers;
 
 -- create table
 create table if not exists orders (
@@ -21,4 +22,12 @@ create table if not exists products (
     id bigserial primary key,
     name varchar(40) not null,
     inventory int not null
+);
+
+
+create table if not exists customers (
+    id bigserial primary key,
+    code varchar(50) unique not null,
+    phone varchar(20) not null,
+    nickname varchar(40) not null
 );

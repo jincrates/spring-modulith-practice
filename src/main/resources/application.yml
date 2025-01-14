@@ -17,6 +17,12 @@ spring:
       jdbc:
         schema-initialization:
           enabled: true
+
+logging:
+  level:
+    org.springframework.jdbc.core: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
 ---
 spring.config.activate.on-profile: local
 
